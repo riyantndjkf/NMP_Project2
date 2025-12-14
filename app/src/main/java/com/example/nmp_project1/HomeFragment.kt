@@ -14,6 +14,8 @@ import com.android.volley.toolbox.Volley
 import org.json.JSONObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import android.content.Context
+import android.content.SharedPreferences
 
 class HomeFragment : Fragment() {
 
@@ -45,8 +47,15 @@ class HomeFragment : Fragment() {
     }
 
     fun updateList() {
+        // 1. AMBIL NAMA USER YANG SEDANG LOGIN
+        val sharedPreferences = requireActivity().getSharedPreferences("AppSession", Context.MODE_PRIVATE)
+        val currentUserName = sharedPreferences.getString("USERNAME", "")
+
         val queue = Volley.newRequestQueue(requireContext())
-        val url = "http://10.0.2.2/nmp_uas/get_all_students.php"
+
+        // 2. KIRIM NAMA TERSEBUT SEBAGAI PARAMETER 'current_user'
+        // Jika currentUserName mengandung spasi, sebaiknya di-encode (tapi untuk simpel begini string biasa seringkali cukup di volley)
+        val url = "http://10.0.2.2/nmp_uas/get_all_students.php?current_user=$currentUserName"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
@@ -55,13 +64,11 @@ class HomeFragment : Fragment() {
                     if (obj.getString("result") == "OK") {
                         val data = obj.getJSONArray("data")
 
-                        // --- BAGIAN INI DIGANTI DENGAN GSON ---
-                        val sType = object : com.google.gson.reflect.TypeToken<ArrayList<Mahasiswa>>() { }.type
-                        mhsList = com.google.gson.Gson().fromJson(data.toString(), sType)
+                        val sType = object : TypeToken<ArrayList<Mahasiswa>>() { }.type
+                        mhsList = Gson().fromJson(data.toString(), sType)
 
-                        // Update Adapter
                         adapter = MahasiswaAdapter(mhsList)
-                        val recView = v.findViewById<RecyclerView>(R.id.recyclerViewHome) // Pastikan recView terambil lagi jika perlu, atau gunakan variabel global
+                        val recView = v.findViewById<RecyclerView>(R.id.recyclerViewHome)
                         recView.adapter = adapter
                         adapter.notifyDataSetChanged()
 
