@@ -2,10 +2,10 @@ package com.example.nmp_project1
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
@@ -20,10 +20,7 @@ class MyFriendsFragment : Fragment() {
     private val friends = ArrayList<Mahasiswa>()
     private lateinit var adapter: MahasiswaAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentMyFriendsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -34,14 +31,11 @@ class MyFriendsFragment : Fragment() {
         adapter = MahasiswaAdapter(friends)
         binding.recViewFriends.layoutManager = LinearLayoutManager(context)
         binding.recViewFriends.adapter = adapter
-
-        loadFriends()
     }
 
-    // Agar saat pindah tab data ter-refresh otomatis
     override fun onResume() {
         super.onResume()
-        loadFriends()
+        loadFriends() // Refresh data setiap kali tab dibuka
     }
 
     private fun loadFriends() {

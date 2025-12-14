@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
@@ -21,10 +20,7 @@ class HomeFragment : Fragment() {
     private val students = ArrayList<Mahasiswa>()
     private lateinit var adapter: MahasiswaAdapter
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -32,24 +28,25 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Setup Adapter
+        // Setup RecyclerView
         adapter = MahasiswaAdapter(students)
         binding.recViewHome.layoutManager = LinearLayoutManager(context)
         binding.recViewHome.adapter = adapter
 
-        // Load Data Awal
+        // Load Data Pertama Kali
         updateList("")
 
-        // Fitur Search (Optional: Load saat tombol search di keyboard ditekan)
-        binding.txtSearch.setOnEditorActionListener { v, actionId, event ->
-            val keyword = binding.txtSearch.text.toString()
-            updateList(keyword)
-            true
+        // Handle Tombol Search (Pastikan ada button atau listener di EditText)
+        // Contoh jika menggunakan TextWatcher atau tombol search
+        /* binding.btnSearch.setOnClickListener {
+             val q = binding.txtSearch.text.toString()
+             updateList(q)
         }
+        */
     }
 
     private fun updateList(keyword: String) {
-        // Ganti URL sesuai IP Address komputer (Localhost Android = 10.0.2.2)
+        // Ganti URL sesuai IP Localhost emulator (10.0.2.2)
         val url = "http://10.0.2.2/nmp_uas/get_all_students.php?q=$keyword"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
@@ -58,6 +55,8 @@ class HomeFragment : Fragment() {
                     val obj = JSONObject(response)
                     if (obj.getString("result") == "OK") {
                         val data = obj.getJSONArray("data")
+
+                        // Parse JSON Array ke List<Mahasiswa> menggunakan Gson
                         val sType = object : TypeToken<List<Mahasiswa>>() {}.type
                         val newStudents = Gson().fromJson<ArrayList<Mahasiswa>>(data.toString(), sType)
 
@@ -71,7 +70,6 @@ class HomeFragment : Fragment() {
             },
             { error ->
                 Log.e("HomeFragment", "Volley Error: ${error.message}")
-                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
             }
         )
         Volley.newRequestQueue(context).add(stringRequest)

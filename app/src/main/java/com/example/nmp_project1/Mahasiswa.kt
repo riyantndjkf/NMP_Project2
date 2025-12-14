@@ -7,20 +7,8 @@ data class Mahasiswa(
     val nama: String,
     val email: String,
     val program: String,
-    @SerializedName("foto_url")
-    val fotoUrl: String,
-    @SerializedName("about_me")
-    val aboutMe: String,
-    @SerializedName("my_course")
-    val myCourse: String,
-    @SerializedName("my_experience")
-    val myExperience: String
-) {
-    fun getCourseList(): List<String> {
-        return myCourse.split(",").map { it.trim() }
-    }
-
-    fun getExperienceList(): List<String> {
-        return myExperience.split(",").map { it.trim() }
-    }
-}
+    @SerializedName("foto") val photoUrl: String, // Mengambil field 'foto' dari JSON
+    val about: String?,
+    val interests: String?,
+    val achievements: String?
+)

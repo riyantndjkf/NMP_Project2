@@ -1,52 +1,70 @@
 package com.example.nmp_project1
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
-import com.example.nmp_project1.databinding.ActivityMahasiswaListBinding
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
 import com.example.nmp_project1.databinding.MahasiswaCardBinding
 import com.squareup.picasso.Picasso
 
-class MahasiswaAdapter(): RecyclerView.Adapter<MahasiswaAdapter.MahasiswaViewHolder>() {
+class MahasiswaAdapter(val mahasiswaList: ArrayList<Mahasiswa>) : RecyclerView.Adapter<MahasiswaAdapter.MahasiswaViewHolder>() {
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MahasiswaViewHolder {
-        val binding = MahasiswaCardBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false)
+    class MahasiswaViewHolder(val binding: MahasiswaCardBinding) : RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MahasiswaViewHolder {
+        val binding = MahasiswaCardBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MahasiswaViewHolder(binding)
     }
 
-    override fun onBindViewHolder(
-        holder: MahasiswaViewHolder,
-        position: Int
-    ) {
-        holder.binding.txtNama.text = MahasiswaData.mahasiswas[position].nama
-        holder.binding.txtNRP.text = "NRP " + MahasiswaData.mahasiswas[position].nrp
-        holder.binding.txtProgram.text = "Program " + MahasiswaData.mahasiswas[position].program
-        // Tampilkan gambar
-        if (MahasiswaData.mahasiswas[position].url.isNotEmpty()) {
-            // Kalau URL ada → pakai Picasso
-            Picasso.get().load(MahasiswaData.mahasiswas[position].url).into(holder.binding.imgMahasiswa)
-        } else {
-            // Kalau tidak → pakai gambar drawable bawaan
-            holder.binding.imgMahasiswa.setImageResource(MahasiswaData.mahasiswas[position].imagedId)
-        }
-
-        // handle page detail mahasiswa
-        holder.binding.root.setOnClickListener {
-            val intent = Intent(holder.itemView.context, MahasiswaDetailActivity::class.java)
-            // Kirim data mahasiswa
-            intent.putExtra("mahasiswa", position)
-            holder.itemView.context.startActivity(intent)
-        }
+    override fun getItemCount(): Int {
+        return mahasiswaList.size
     }
 
-    override fun getItemCount() = MahasiswaData.mahasiswas.size
+    override fun onBindViewHolder(holder: MahasiswaViewHolder, position: Int) {
+        val mhs = mahasiswaList[position]
 
-    class  MahasiswaViewHolder(val binding: MahasiswaCardBinding): RecyclerView.ViewHolder(binding.root)
-    
+        holder.binding.txtNama.text = mhs.nama
+        holder.binding.txtNrp.text = mhs.nrp
+
+        // LOAD GAMBAR DARI URL (Gunakan Picasso)
+        // Pastikan URL valid, jika kosong pakai placeholder
+        if (mhs.photoUrl.isNotEmpty()) {
+            Picasso.get().load(mhs.photoUrl).into(holder.binding.imgProfile)
+        }
+
+        // Tombol Detail
+        holder.binding.btnDetail.setOnClickListener {
+            val intent = Intent(holder.itemView.context, MahasiswaDetailActivity::class.java)
+            // Kirim NRP saja, nanti di DetailActivity ambil data lagi atau kirim via Parcelable
+            intent.putExtra("MAHASISWA_NRP", mhs.nrp)
+            holder.itemView.context.startActivity(intent)
+        }
+
+        // Tombol Add Friend
+        holder.binding.btnAddFriend.setOnClickListener {
+            val context = holder.itemView.context
+            val url = "http://10.0.2.2/nmp_uas/add_friend.php"
+
+            val request = object : StringRequest(Method.POST, url,
+                Response.Listener { response ->
+                    Toast.makeText(context, "Berhasil menambahkan teman!", Toast.LENGTH_SHORT).show()
+                },
+                Response.ErrorListener { error ->
+                    Toast.makeText(context, "Gagal: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            ) {
+                override fun getParams(): MutableMap<String, String> {
+                    val params = HashMap<String, String>()
+                    params["nrp"] = mhs.nrp
+                    return params
+                }
+            }
+            Volley.newRequestQueue(context).add(request)
+        }
+    }
 }
