@@ -7,8 +7,8 @@ data class Mahasiswa(
     val nama: String,
     val email: String,
     val program: String,
-    @SerializedName("foto") val photoUrl: String, // Mengambil field 'foto' dari JSON
-    val about: String?,
-    val interests: String?,
-    val achievements: String?
+    @SerializedName("foto_url") val photoUrl: String,
+    @SerializedName("about_me") val about: String?,
+    @SerializedName("my_course") val interests: String?,
+    @SerializedName("my_experience") val achievements: String?
 )

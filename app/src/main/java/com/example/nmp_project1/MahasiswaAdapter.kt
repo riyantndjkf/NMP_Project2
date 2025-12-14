@@ -30,11 +30,19 @@ class MahasiswaAdapter(val mahasiswaList: ArrayList<Mahasiswa>) : RecyclerView.A
 
         holder.binding.txtNama.text = mhs.nama
         holder.binding.txtNRP.text = mhs.nrp
-
-        // LOAD GAMBAR DARI URL (Gunakan Picasso)
-        // Pastikan URL valid, jika kosong pakai placeholder
         if (mhs.photoUrl.isNotEmpty()) {
-            Picasso.get().load(mhs.photoUrl).into(holder.binding.imgMahasiswa)
+            var url = mhs.photoUrl
+            // Jika URL tidak dimulai dengan http, anggap itu nama file di server lokal
+            if (!url.startsWith("http")) {
+                // Ganti 10.0.2.2 dengan IP server Anda jika di HP fisik
+                url = "http://10.0.2.2/nmp_uas/images/$url"
+            }
+
+            Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.ic_launcher_foreground) // Tambahkan placeholder biar rapi
+                .error(R.drawable.ic_launcher_background) // Gambar jika error
+                .into(holder.binding.imgMahasiswa)
         }
 
         // Tombol Detail

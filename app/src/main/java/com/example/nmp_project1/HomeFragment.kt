@@ -12,9 +12,11 @@ import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import org.json.JSONObject
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class HomeFragment : Fragment() {
-    // Global variable agar bisa diakses di function update
+
     var mhsList = ArrayList<Mahasiswa>() // Pastikan Class Mahasiswa sudah ada
     lateinit var v: View
     lateinit var adapter: MahasiswaAdapter // Pastikan Class MahasiswaAdapter sudah ada
@@ -44,39 +46,33 @@ class HomeFragment : Fragment() {
 
     fun updateList() {
         val queue = Volley.newRequestQueue(requireContext())
-        // Ganti URL sesuai IP Komputer Anda (jangan pakai localhost jika di HP fisik)
-        // Jika pakai Emulator Android Studio gunakan 10.0.2.2
         val url = "http://10.0.2.2/nmp_uas/get_all_students.php"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
                 try {
                     val obj = JSONObject(response)
-                    val jsonArray = obj.getJSONArray("data") // Sesuaikan key JSON Anda (misal 'data')
-                    mhsList.clear()
+                    if (obj.getString("result") == "OK") {
+                        val data = obj.getJSONArray("data")
 
-                    for (i in 0 until jsonArray.length()) {
-                        val mhsObj = jsonArray.getJSONObject(i)
-                        // Pastikan constructor Mahasiswa sesuai dengan model Anda
-                        val mhs = Mahasiswa(
-                            mhsObj.getString("nrp"),
-                            mhsObj.getString("nama"),
-                            mhsObj.getString("email"),
-                            mhsObj.getString("program"),
-                            mhsObj.getString("foto_url"),
-                            mhsObj.getString("about"),
-                            mhsObj.getString("interests"),
-                            mhsObj.getString("achievements"),
-                        )
-                        mhsList.add(mhs)
+                        // --- BAGIAN INI DIGANTI DENGAN GSON ---
+                        val sType = object : com.google.gson.reflect.TypeToken<ArrayList<Mahasiswa>>() { }.type
+                        mhsList = com.google.gson.Gson().fromJson(data.toString(), sType)
+
+                        // Update Adapter
+                        adapter = MahasiswaAdapter(mhsList)
+                        val recView = v.findViewById<RecyclerView>(R.id.recyclerViewHome) // Pastikan recView terambil lagi jika perlu, atau gunakan variabel global
+                        recView.adapter = adapter
+                        adapter.notifyDataSetChanged()
+
+                        Log.d("CekData", "Data masuk: ${mhsList.size}")
                     }
-                    adapter.notifyDataSetChanged() // Refresh tampilan
                 } catch (e: Exception) {
-                    Log.e("ErrorJSON", e.message.toString())
+                    Log.e("ErrorJSON", "Gagal parsing: ${e.message}")
                 }
             },
             { error ->
-                Log.e("VolleyError", error.toString())
+                Log.e("VolleyError", "Gagal koneksi: ${error.message}")
             }
         )
         queue.add(stringRequest)
