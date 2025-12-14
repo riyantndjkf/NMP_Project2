@@ -2,60 +2,72 @@ package com.example.nmp_project1
 
 import android.os.Bundle
 import android.util.Log
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import com.example.nmp_project1.databinding.FragmentMyFriendsBinding
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import org.json.JSONObject
 
 class MyFriendsFragment : Fragment() {
-    private lateinit var binding: FragmentMyFriendsBinding
-    private val friends = ArrayList<Mahasiswa>()
-    private lateinit var adapter: MahasiswaAdapter
+    var friendsList = ArrayList<Mahasiswa>()
+    lateinit var v: View
+    lateinit var adapter: MahasiswaAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentMyFriendsBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        v = inflater.inflate(R.layout.fragment_my_friends, container, false)
+        return v
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = MahasiswaAdapter(friends)
-        binding.recViewFriends.layoutManager = LinearLayoutManager(context)
-        binding.recViewFriends.adapter = adapter
+        val recView = v.findViewById<RecyclerView>(R.id.recyclerViewFriends)
+        recView.layoutManager = LinearLayoutManager(requireContext())
+
+        adapter = MahasiswaAdapter(friendsList)
+        recView.adapter = adapter
+
+        updateFriends()
     }
 
-    override fun onResume() {
-        super.onResume()
-        loadFriends() // Refresh data setiap kali tab dibuka
-    }
-
-    private fun loadFriends() {
+    fun updateFriends() {
+        // Logika sama dengan Home, tapi arahkan ke get_my_friends.php
+        val q = Volley.newRequestQueue(requireContext())
         val url = "http://10.0.2.2/nmp_uas/get_my_friends.php"
 
         val stringRequest = StringRequest(Request.Method.GET, url,
             { response ->
-                val obj = JSONObject(response)
-                if (obj.getString("result") == "OK") {
-                    val data = obj.getJSONArray("data")
-                    val sType = object : TypeToken<List<Mahasiswa>>() {}.type
-                    val newFriends = Gson().fromJson<ArrayList<Mahasiswa>>(data.toString(), sType)
-
-                    friends.clear()
-                    friends.addAll(newFriends)
+                try {
+                    val obj = JSONObject(response)
+                    val arr = obj.getJSONArray("data")
+                    friendsList.clear()
+                    for(i in 0 until arr.length()){
+                        val data = arr.getJSONObject(i)
+                        // Sesuaikan parsing dengan JSON response
+                        val mhs = Mahasiswa(
+                            data.getString("nrp"),
+                            data.getString("nama"),
+                            data.getString("email"),
+                            data.getString("program"),
+                            data.getString("foto_url")
+                        )
+                        friendsList.add(mhs)
+                    }
                     adapter.notifyDataSetChanged()
+                } catch (e: Exception) {
+                    Log.e("FriendsError", e.message.toString())
                 }
             },
-            { error -> Log.e("MyFriends", error.toString()) }
+            { error -> Log.e("VolleyError", error.toString()) }
         )
-        Volley.newRequestQueue(context).add(stringRequest)
+        q.add(stringRequest)
     }
 }

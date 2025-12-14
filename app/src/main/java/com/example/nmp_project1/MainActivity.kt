@@ -1,48 +1,41 @@
 package com.example.nmp_project1
 
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.nmp_project1.databinding.ActivityMainBinding
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
-
-    // List fragment yang akan ditampilkan
-    private val fragments: ArrayList<Fragment> = arrayListOf(
-        HomeFragment(),
-        MyFriendsFragment(),
-        SettingsFragment()
-    )
+    val fragments: ArrayList<Fragment> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_main)
+        val viewPager = findViewById<ViewPager2>(R.id.viewPager)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        fragments.add(HomeFragment())
+        fragments.add(MyFriendsFragment())
+        fragments.add(SettingsFragment())
 
-        // 1. Setup ViewPager Adapter (Materi Week 8)
-        binding.viewPager.adapter = object : FragmentStateAdapter(this) {
+        // 3. Set Adapter untuk ViewPager
+        viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = fragments.size
             override fun createFragment(position: Int): Fragment = fragments[position]
         }
-
-        // 2. Listener saat BottomNav diklik -> Pindah Halaman ViewPager (Materi Week 9)
-        binding.bottomNav.setOnItemSelectedListener {
-            when (it.itemId) {
-                R.id.itemHome -> binding.viewPager.currentItem = 0
-                R.id.itemFriends -> binding.viewPager.currentItem = 1
-                R.id.itemSettings -> binding.viewPager.currentItem = 2
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                bottomNav.selectedItemId = bottomNav.menu.getItem(position).itemId
+            }
+        })
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.itemHome -> viewPager.currentItem = 0 // Pastikan ID ini sama dengan di bottom_menu.xml
+                R.id.itemFriends -> viewPager.currentItem = 1 // Pastikan ID ini sama dengan di bottom_menu.xml
+                R.id.itemSettings -> viewPager.currentItem = 2 // Pastikan ID ini sama dengan di bottom_menu.xml
             }
             true
         }
-
-        // 3. Callback saat ViewPager digeser -> Update icon aktif di BottomNav
-        binding.viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.bottomNav.menu.getItem(position).isChecked = true
-            }
-        })
     }
 }
