@@ -1,5 +1,6 @@
 package com.example.nmp_project1
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,13 +16,12 @@ import org.json.JSONObject
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import android.content.Context
-import android.content.SharedPreferences
 
 class HomeFragment : Fragment() {
 
-    var mhsList = ArrayList<Mahasiswa>() // Pastikan Class Mahasiswa sudah ada
+    var mhsList = ArrayList<Mahasiswa>()
     lateinit var v: View
-    lateinit var adapter: MahasiswaAdapter // Pastikan Class MahasiswaAdapter sudah ada
+    lateinit var adapter: MahasiswaAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,15 +46,13 @@ class HomeFragment : Fragment() {
         updateList()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateList() {
-        // 1. AMBIL NAMA USER YANG SEDANG LOGIN
         val sharedPreferences = requireActivity().getSharedPreferences("AppSession", Context.MODE_PRIVATE)
         val currentUserName = sharedPreferences.getString("USERNAME", "")
 
         val queue = Volley.newRequestQueue(requireContext())
 
-        // 2. KIRIM NAMA TERSEBUT SEBAGAI PARAMETER 'current_user'
-        // Jika currentUserName mengandung spasi, sebaiknya di-encode (tapi untuk simpel begini string biasa seringkali cukup di volley)
         val url = "http://10.0.2.2/nmp_uas/get_all_students.php?current_user=$currentUserName"
 
         val stringRequest = StringRequest(Request.Method.GET, url,

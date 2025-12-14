@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
         fragments.add(MyFriendsFragment())
         fragments.add(SettingsFragment())
 
-        // 3. Set Adapter untuk ViewPager
         viewPager.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = fragments.size
             override fun createFragment(position: Int): Fragment = fragments[position]
@@ -31,9 +30,9 @@ class MainActivity : AppCompatActivity() {
         })
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.itemHome -> viewPager.currentItem = 0 // Pastikan ID ini sama dengan di bottom_menu.xml
-                R.id.itemFriends -> viewPager.currentItem = 1 // Pastikan ID ini sama dengan di bottom_menu.xml
-                R.id.itemSettings -> viewPager.currentItem = 2 // Pastikan ID ini sama dengan di bottom_menu.xml
+                R.id.itemHome -> viewPager.currentItem = 0
+                R.id.itemFriends -> viewPager.currentItem = 1
+                R.id.itemSettings -> viewPager.currentItem = 2
             }
             true
         }

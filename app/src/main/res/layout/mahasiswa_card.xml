@@ -18,7 +18,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="#F89191"
             android:orientation="vertical"
             android:padding="10dp">
@@ -26,12 +26,13 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="UselessParent">
 
                 <ImageView
                     android:id="@+id/imgMahasiswa"
                     android:layout_width="100dp"
-                    android:layout_height="130dp"
+                    android:layout_height="100dp"
                     android:layout_marginEnd="10dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_launcher_background"
@@ -46,18 +47,20 @@
                         android:id="@+id/txtNama"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Angela Wong"
+                        android:text="@string/nama_mahasiswa"
                         android:textColor="@color/white"
                         android:textSize="18sp"
                         android:textStyle="bold" />
 
-                    <Space android:layout_width="match_parent" android:layout_height="4dp" />
+                    <Space
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp" />
 
                     <TextView
                         android:id="@+id/txtNRP"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="NRP 160723010"
+                        android:text="@string/nrp"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
 
@@ -65,44 +68,9 @@
                         android:id="@+id/txtProgram"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Program SIB"
+                        android:text="@string/program_studi"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
-
-                    <Space android:layout_width="match_parent" android:layout_height="12dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <Button
-                            android:id="@+id/btnAddFriend"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="5dp"
-                            android:text="Add Friend"
-                            android:textSize="12sp"
-                            android:textColor="@color/white"
-                            app:strokeColor="@color/white"
-                            app:strokeWidth="1dp" />
-
-                        <Button
-                            android:id="@+id/btnDetail"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="5dp"
-                            android:text="Detail"
-                            android:textSize="12sp"
-                            android:textColor="@color/white"
-                            app:strokeColor="@color/white"
-                            app:strokeWidth="1dp" />
-
-                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

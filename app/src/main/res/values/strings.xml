@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">NMP_Project1</string>
+    <string name="nama_mahasiswa">Nama Mahasiswa</string>
+    <string name="nrp">NRP</string>
+    <string name="program_studi">Program Studi</string>
+    <string name="request_friend">Request Friend</string>
+    <string name="gd">GD</string>
+    <string name="dsai">DSAI</string>
+    <string name="ncs">NCS</string>
+    <string name="description">Description</string>
+    <string name="program">Program:</string>
+    <string name="imes">IMES</string>
+    <string name="nama_lengkap">Nama Lengkap</string>
+    <string name="dmt">DMT</string>
 </resources>
