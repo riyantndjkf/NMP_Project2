@@ -64,7 +64,9 @@ class HomeFragment : Fragment() {
                             mhsObj.getString("email"),
                             mhsObj.getString("program"),
                             mhsObj.getString("foto_url"),
-                            // Tambahkan field lain sesuai class Mahasiswa.kt
+                            mhsObj.getString("about"),
+                            mhsObj.getString("interests"),
+                            mhsObj.getString("achievements"),
                         )
                         mhsList.add(mhs)
                     }

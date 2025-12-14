@@ -57,7 +57,10 @@ class MyFriendsFragment : Fragment() {
                             data.getString("nama"),
                             data.getString("email"),
                             data.getString("program"),
-                            data.getString("foto_url")
+                            data.getString("foto_url"),
+                            data.getString("about"),
+                            data.getString("interests"),
+                            data.getString("achievements"),
                         )
                         friendsList.add(mhs)
                     }

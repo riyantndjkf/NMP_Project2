@@ -29,12 +29,12 @@ class MahasiswaAdapter(val mahasiswaList: ArrayList<Mahasiswa>) : RecyclerView.A
         val mhs = mahasiswaList[position]
 
         holder.binding.txtNama.text = mhs.nama
-        holder.binding.txtNrp.text = mhs.nrp
+        holder.binding.txtNRP.text = mhs.nrp
 
         // LOAD GAMBAR DARI URL (Gunakan Picasso)
         // Pastikan URL valid, jika kosong pakai placeholder
         if (mhs.photoUrl.isNotEmpty()) {
-            Picasso.get().load(mhs.photoUrl).into(holder.binding.imgProfile)
+            Picasso.get().load(mhs.photoUrl).into(holder.binding.imgMahasiswa)
         }
 
         // Tombol Detail
