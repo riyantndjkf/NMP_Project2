@@ -48,4 +48,5 @@ class MahasiswaAdapter(): RecyclerView.Adapter<MahasiswaAdapter.MahasiswaViewHol
     override fun getItemCount() = MahasiswaData.mahasiswas.size
 
     class  MahasiswaViewHolder(val binding: MahasiswaCardBinding): RecyclerView.ViewHolder(binding.root)
+    
 }

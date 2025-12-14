@@ -1,0 +1,79 @@
+package com.example.nmp_project1
+
+import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Request
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.example.nmp_project1.databinding.FragmentHomeBinding
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import org.json.JSONObject
+
+class HomeFragment : Fragment() {
+    private lateinit var binding: FragmentHomeBinding
+    private val students = ArrayList<Mahasiswa>()
+    private lateinit var adapter: MahasiswaAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Setup Adapter
+        adapter = MahasiswaAdapter(students)
+        binding.recViewHome.layoutManager = LinearLayoutManager(context)
+        binding.recViewHome.adapter = adapter
+
+        // Load Data Awal
+        updateList("")
+
+        // Fitur Search (Optional: Load saat tombol search di keyboard ditekan)
+        binding.txtSearch.setOnEditorActionListener { v, actionId, event ->
+            val keyword = binding.txtSearch.text.toString()
+            updateList(keyword)
+            true
+        }
+    }
+
+    private fun updateList(keyword: String) {
+        // Ganti URL sesuai IP Address komputer (Localhost Android = 10.0.2.2)
+        val url = "http://10.0.2.2/nmp_uas/get_all_students.php?q=$keyword"
+
+        val stringRequest = StringRequest(Request.Method.GET, url,
+            { response ->
+                try {
+                    val obj = JSONObject(response)
+                    if (obj.getString("result") == "OK") {
+                        val data = obj.getJSONArray("data")
+                        val sType = object : TypeToken<List<Mahasiswa>>() {}.type
+                        val newStudents = Gson().fromJson<ArrayList<Mahasiswa>>(data.toString(), sType)
+
+                        students.clear()
+                        students.addAll(newStudents)
+                        adapter.notifyDataSetChanged()
+                    }
+                } catch (e: Exception) {
+                    Log.e("HomeFragment", "Error parsing JSON", e)
+                }
+            },
+            { error ->
+                Log.e("HomeFragment", "Volley Error: ${error.message}")
+                Toast.makeText(context, "Gagal memuat data", Toast.LENGTH_SHORT).show()
+            }
+        )
+        Volley.newRequestQueue(context).add(stringRequest)
+    }
+}
